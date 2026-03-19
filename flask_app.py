@@ -93,7 +93,7 @@ def roll_updated():
 
     today = "2" + datetime.now(pytz.timezone("Pacific/Auckland")).strftime("%d%m%Y")
 
-    if today not in record:
+    if int(today) not in record:
         # Get the last attendance record
         record_append = [list(item) for item in list(record.values())[0]]
         l = len(record_append)
@@ -214,8 +214,10 @@ def best():
 def better():
     """Presents the results of who is present
     """
+    print(request.form)
+    today = int(request.form.get("date"))
+    print(today)
 
-    today = "2" + datetime.now(pytz.timezone("Pacific/Auckland")).strftime("%d%m%Y")
 
     cur, con = connect_db(DB)
 
