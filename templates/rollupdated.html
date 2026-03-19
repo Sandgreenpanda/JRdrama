@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<label for="date">Date:</label>
+
+<select name="date" id="date">
+    {% for day, attendance in record.items() %}
+    {% set astring = day|string %}
+  <option value="{{day}}">{{astring[1:3]}}/{{astring[3:5]}}/{{astring[5:]}}</option>
+  {% endfor %}
+</select>
+        <form action="/better" method="POST">
+            {% for item in people %}
+            <label for="{{loop.index}}"><a class="a-p" href="data/{{item[3]}}">{{item[2]}} played by {{item[0]}} {{item[1]}}: </a></label>
+            <input id="{{loop.index}}" type="checkbox" name="{{item[3]}}" value="1"></input><br>
+            {% endfor %}
+            <button type="submit" value="Submit">Submit</button>
+        </form>
+    <script type="text/javascript">
+        const record = {{ record|tojson|safe }};
+        const people = {{ people|tojson|safe }};
+    </script>
+{% endblock %}

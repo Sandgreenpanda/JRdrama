@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<br><h1>Scenes:</h1><br><br><br><br>
+    {% for scene, score in scenes.items() %}
+    <h2>{{scene}}: {{score*100 | round(2)}}%</h2>
+    {% endfor%}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<br><br><h1>{{data[0][1]}} {{data[0][2]}}</h1><br>
+<h2>Character Data</h2><br>
+<h3 style="text-align:center;">Name:</h3><br>
+<p style="text-align:center;">{{data[0][3]}}</p>
+<br><h3 style="text-align:center;">Lines:</h3><br>
+{% for scene, lines in data[2].items() %}
+<p style="text-align:center;">{{scene}}: {{lines}}</p>
+{% endfor %}
+<br><h2>Attendance Data</h2><br>
+<table class="tablecentre">
+{% for day in data[1] %}
+            <tr>
+                <td>
+                    {% set astring = day[1]|string%}
+        <p style="line-height: 1.4;text-align:center;">{{astring[1:3]}}/{{astring[3:5]}}/{{astring[5:]}}</p>
+                </td>
+                <td>
+                    <p style="line-height: 1.4;">
+                        {% if day[2] == 1 %}✔️{% else %}❌{% endif %}
+                    </p>
+                </td>
+            </tr>
+            {% endfor %}</table>
+{% endblock %}
