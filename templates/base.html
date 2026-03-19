@@ -17,7 +17,13 @@
         <div class="navbar-brand">JR Drama</div>
         <div class="navbar-links">
             <a href="/">home</a>
+            <a href="/roll">roll</a>
             <a href="/attendance">attendance</a>
+            {% if logged_in == True %}
+            <a href="/admin-config">admin</a>
+            {% else %}
+            <a href="/admin">log in</a>
+            {% endif %}
         </div>
     </div>
 </nav>

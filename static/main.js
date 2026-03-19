@@ -7,7 +7,6 @@ if (date) {
     console.log(today_attendance);
     console.log(date.value);
 
-    console.log("HI");
     let i = 0;
     for (const item in people) {
         let here = Boolean(today_attendance[i][1]);

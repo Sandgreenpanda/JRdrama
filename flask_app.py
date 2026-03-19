@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 import json
 import sqlite3
 from sqlite3 import Error
@@ -6,11 +6,20 @@ import csv
 from datetime import datetime
 import pytz
 from copy import deepcopy
+import os
+
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+
 
 # Database path
 DB = "/home/JRdrama/mysite/drama.db"
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
+
+def logged_in(s):
+    return s.get("password") == ADMIN_PASSWORD
+
 
 def connect_db(db_file):
     """
@@ -65,7 +74,8 @@ with open("/home/JRdrama/mysite/static/people.csv", 'r', newline='', encoding='u
         people_csv = list(map(tuple, reader))
 
 
-
+# DELME
+'''
 @app.route('/')
 def roll():
     """Takes the roll
@@ -80,6 +90,7 @@ def roll():
     # close the connection when done, prevents issues like memory leaks
     con.close()
     return render_template("roll.html", people=people_list)
+'''
 
 @app.route('/roll')
 def roll_updated():
@@ -115,7 +126,7 @@ def roll_updated():
     new_record = {}
     for k,v in record.items():
         new_record[str(k)] = v
-    return render_template("rollupdated.html", people=people_list, record=new_record)
+    return render_template("rollupdated.html", people=people_list, record=new_record, logged_in=logged_in(session))
 
 @app.route('/data/<id>')
 def data_name(id):
@@ -143,7 +154,7 @@ def data_name(id):
             line_counts[scene] = counts[person_data[3]]
 
 
-    return render_template("data.html", data=[person_data, attendance_data, line_counts])
+    return render_template("data.html", data=[person_data, attendance_data, line_counts], logged_in=logged_in(session))
 
 
 
@@ -156,9 +167,11 @@ def attendance():
     record = get_attendance_data(cur, con)
     # close the connection when done, prevents issues like memory leaks
     con.close()
-    return render_template("attendance.html", record=record)
+    return render_template("attendance.html", record=record, logged_in=logged_in(session))
 
 
+# Old code. DELME
+'''
 @app.route('/best', methods=["POST"])
 def best():
     """Presents the results of who is present
@@ -208,7 +221,7 @@ def best():
             scene_scores[scene] = temp_score/chars["total"]
     #scene_scores
         return render_template("best.html", scenes=dict(sorted(scene_scores.items(), key=lambda item: item[1], reverse=True)))
-
+'''
 
 @app.route('/better', methods=["POST"])
 def better():
@@ -254,8 +267,21 @@ def better():
                 temp_score += chars[char_dat[2]]
         scene_scores[scene] = temp_score/chars["total"]
 
-    return render_template("best.html", scenes=dict(sorted(scene_scores.items(), key=lambda item: item[1], reverse=True)))
+    return render_template("best.html", scenes=dict(sorted(scene_scores.items(), key=lambda item: item[1], reverse=True)), logged_in=logged_in(session))
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')
+    return render_template('admin.html', logged_in=logged_in(session))
+
+@app.route('/admin-config', methods=["POST", "GET"])
+def admin_config():
+    if request.method == "POST":
+        password = request.form.get("password")
+        if password == ADMIN_PASSWORD:
+            session["password"] = password
+            return "onep"
+    else:
+        if logged_in(session):
+            return "onem"
+    return "zero"
+
