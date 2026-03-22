@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block main %}
+{% if logged_in == True %}
         <form action="/best" method="POST">
             {% for item in people %}
             <label for="{{loop.index}}"><a class="a-p" href="data/{{item[3]}}">{{item[2]}} played by {{item[0]}} {{item[1]}}: </a></label>
@@ -12,4 +13,7 @@
             <input id="or" type="checkbox" name="or" value="1"></input><br>
             <button type="submit" value="Submit">Submit</button>
         </form>
+{% else %}
+ACSESS DENIED
+{% endif %}
 {% endblock %}

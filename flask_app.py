@@ -92,6 +92,11 @@ def roll():
     return render_template("roll.html", people=people_list)
 '''
 
+@app.route('/')
+def main():
+    """"Main Todo"""
+    return render_template("main.html", logged_in=logged_in(session))
+
 @app.route('/roll')
 def roll_updated():
     """Takes the roll
@@ -279,9 +284,9 @@ def admin_config():
         password = request.form.get("password")
         if password == ADMIN_PASSWORD:
             session["password"] = password
-            return "onep"
+            return redirect("/")
     else:
         if logged_in(session):
-            return "onem"
-    return "zero"
+            return redirect("/")
+    return redirect("/")
 
