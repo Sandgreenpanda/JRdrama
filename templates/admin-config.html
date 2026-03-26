@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<form action="/process" method="POST"><br>
+<label for="person">Person: </label>
+<select name="person" id="person">
+        {% for person in people %}
+        <option value={{person[0]}}>
+            {{person[1]}} {{person[2]}}
+        </option>
+        {% endfor %}
+    </select><br>
+    <label for="fname">First name:</label>
+<input type="text" id="fname" name="fname"><br>
+<label for="lname">Last name:</label>
+<input type="text" id="lname" name="lname"><br>
+<label for="role">Role:</label>
+<input type="text" id="role" name="role"><br><br>
+    <button type="button", class="delete", id="delete">Delete</button><br><br>
+    <button type="submit">Update</button>
+</form>
+{% endblock %}

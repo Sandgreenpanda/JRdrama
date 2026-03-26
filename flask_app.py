@@ -17,6 +17,7 @@ DB = "/home/JRdrama/mysite/drama.db"
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
+
 def logged_in(s):
     return s.get("password") == ADMIN_PASSWORD
 
@@ -37,6 +38,7 @@ def connect_db(db_file):
     except Error as e:
         print(e)
         return none
+
 
 def get_attendance_data(cur, con):
 
@@ -74,6 +76,11 @@ with open("/home/JRdrama/mysite/static/people.csv", 'r', newline='', encoding='u
         people_csv = list(map(tuple, reader))
 
 
+def admin_config_authed(cur, con, session):
+    cur.execute("SELECT id, fname, lname, role FROM people")
+    people = cur.fetchall()
+    return render_template("admin-config.html", people=people, logged_in=logged_in(session))
+
 # DELME
 '''
 @app.route('/')
@@ -92,10 +99,12 @@ def roll():
     return render_template("roll.html", people=people_list)
 '''
 
+
 @app.route('/')
 def main():
     """"Main Todo"""
     return render_template("main.html", logged_in=logged_in(session))
+
 
 @app.route('/roll')
 def roll_updated():
@@ -133,6 +142,7 @@ def roll_updated():
         new_record[str(k)] = v
     return render_template("rollupdated.html", people=people_list, record=new_record, logged_in=logged_in(session))
 
+
 @app.route('/data/<id>')
 def data_name(id):
     """
@@ -160,7 +170,6 @@ def data_name(id):
 
 
     return render_template("data.html", data=[person_data, attendance_data, line_counts], logged_in=logged_in(session))
-
 
 
 @app.route('/attendance')
@@ -228,6 +237,7 @@ def best():
         return render_template("best.html", scenes=dict(sorted(scene_scores.items(), key=lambda item: item[1], reverse=True)))
 '''
 
+
 @app.route('/better', methods=["POST"])
 def better():
     """Presents the results of who is present
@@ -274,19 +284,39 @@ def better():
 
     return render_template("best.html", scenes=dict(sorted(scene_scores.items(), key=lambda item: item[1], reverse=True)), logged_in=logged_in(session))
 
+
 @app.route('/admin')
 def admin():
+    """Admin login page. Just a form with a box for a password. Redirects to admin-config"""
     return render_template('admin.html', logged_in=logged_in(session))
+
 
 @app.route('/admin-config', methods=["POST", "GET"])
 def admin_config():
+    cur, con = connect_db(DB)
+    """Configuration page for admins
+    POST:
+        Comes form the form on the log-in page, adds the password to session. If it is a sucsess, It returns the configuration page
+    GET:
+        Checks if the user's password is the admin password, and if so, logs them in and returns the configuration page
+
+    returns:
+        The admin configuration page if the user is authorised, and an error otherwise.
+    """
+
     if request.method == "POST":
         password = request.form.get("password")
         if password == ADMIN_PASSWORD:
             session["password"] = password
-            return redirect("/")
+            return admin_config_authed(cur, con, session)
+        else:
+            return render_template('error.html', error="Incorrect Password", logged_in=logged_in(session))
     else:
         if logged_in(session):
-            return redirect("/")
-    return redirect("/")
+            return admin_config_authed(cur, con, session)
+        else:
+            return render_template('error.html', error="Incorrect Password", logged_in=logged_in(session))
 
+@app.route('/process', methods=["POST", "DELETE"])
+def process():
+    return "OK", 200

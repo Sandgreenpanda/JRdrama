@@ -21,3 +21,26 @@ if (date) {
     }
     });
 }
+
+if (window.location.pathname === '/admin-config') {
+    const delete_button = document.getElementById("delete");
+    const person_dd = document.getElementById("person");
+    const fname = document.getElementById("fname");
+    const lname = document.getElementById("lname");
+    const roll = document.getElementById("roll");
+    let person = person_dd.value;
+    person_dd.addEventListener("change", (event) => {
+        person = person_dd.value;
+        fnamne.value=
+    });
+
+    delete_button.addEventListener("click", (event) => {
+       fetch('https://jrdrama.pythonanywhere.com/process', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: person,
+        })
+    });
+}

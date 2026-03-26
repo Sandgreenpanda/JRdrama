@@ -121,3 +121,16 @@ a, a:visited {
 .a-p, .a-p:visited {
     color:#000000;
 }
+
+button.delete {
+    border: 3.5px dashed #fb374e;
+    border-radius: 9px;
+    background-color: #ff666d;
+    padding: 4px 8px;
+    color: #f9d2d2;
+}
+
+button.delete:hover {
+   background-color: #fb374e;
+   border: 3.5px dashed #ff666d;
+}
