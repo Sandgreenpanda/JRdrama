@@ -7,6 +7,9 @@ from datetime import datetime
 import pytz
 from copy import deepcopy
 import os
+from cryptography.fernet import Fernet
+import time
+
 
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
@@ -16,9 +19,16 @@ DB = "/home/JRdrama/mysite/drama.db"
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-
+fernet = Fernet(app.secret_key.encode())
 
 def logged_in(s):
+    """Uses the session to tell if a user is logged in.
+
+    ARGS:
+        s: the session
+
+    RETURNS:
+        bool: if the user is logged in or not"""
     return s.get("password") == ADMIN_PASSWORD
 
 
@@ -80,6 +90,16 @@ def admin_config_authed(cur, con, session):
     cur.execute("SELECT id, fname, lname, role FROM people")
     people = cur.fetchall()
     return render_template("admin-config.html", people=people, logged_in=logged_in(session))
+
+def gen_key(id, fernet):
+    epoch_time = time.time()
+
+
+    message = b"my deep dark secret"
+
+    encrypted_message = f.encrypt(message)
+
+    print(f"Encrypted: {encrypted_message}")
 
 # DELME
 '''
